@@ -54,6 +54,7 @@ public class MovieIconAdapter extends BaseAdapter {
         ImageView imageView;
         if (convertView == null) {
             view = mInflater.inflate(layoutResource, parent, false);
+            view.setPadding(8, 8, 8, 8);
         } else {
             view = convertView;
         }
