@@ -19,6 +19,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mMovieTitleTextView;
     private TextView mOverviewTextView;
     private TextView mUserRatingTextView;
+    private TextView mReleaseDateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
@@ -29,6 +30,7 @@ public class DetailActivity extends AppCompatActivity {
         mMovieTitleTextView = (TextView) findViewById(R.id.movie_title_textView);
         mOverviewTextView = (TextView) findViewById(R.id.overview_textView);
         mUserRatingTextView = (TextView) findViewById(R.id.user_rating_textView);
+        mReleaseDateTextView = (TextView) findViewById(R.id.release_date_textView);
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("MovieData")) {
@@ -36,6 +38,7 @@ public class DetailActivity extends AppCompatActivity {
             mMovieTitleTextView.setText(data.getOriginalTitle());
             mOverviewTextView.setText(data.getPlotSynopsis());
             mUserRatingTextView.setText(String.format(Locale.US, "%.1f", data.getVoteAverage()));
+            mReleaseDateTextView.setText(String.format(Locale.US, "Released %s", data.getReleaseDate()));
             String imageUrl = "https://image.tmdb.org/t/p/w300"+data.getImagePath();
             Picasso.with(this)
                     .load(imageUrl)
