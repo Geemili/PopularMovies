@@ -12,6 +12,7 @@ import android.widget.GridView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import info.movito.themoviedbapi.TmdbApi;
@@ -85,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
                     list.add(i, movieData);
                 }
-                Collections.sort(list, MovieData.CompareByVoteAverage);
+                Comparator reverseOrder = Collections.reverseOrder(MovieData.CompareByVoteAverage);
+                Collections.sort(list, reverseOrder);
                 mMoviesAdapter.notifyDataSetChanged();
             }
         }
