@@ -1,31 +1,33 @@
 package xyz.geemili.popularmovies;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 /**
  * Created by geemili on 2016-08-16.
  */
-public class MovieIconAdapter extends BaseAdapter {
+public class MovieDataAdapter extends BaseAdapter {
+
+    private static final String LOG_TAG = MovieDataAdapter.class.getSimpleName();
 
     private Context mContext;
-    private List<MovieIcon> movies;
+    private List<MovieData> movies;
     @LayoutRes int layoutResource;
     @IdRes int imageViewIdResource;
     private LayoutInflater mInflater;
 
-    public MovieIconAdapter(Context c, @LayoutRes int resource, @IdRes int imageViewResource, List<MovieIcon> movies) {
+    public MovieDataAdapter(Context c, @LayoutRes int resource, @IdRes int imageViewResource, List<MovieData> movies) {
         this.mContext = c;
         this.mInflater = LayoutInflater.from(mContext);
         this.movies = movies;
@@ -60,16 +62,17 @@ public class MovieIconAdapter extends BaseAdapter {
         }
         imageView = (ImageView) view.findViewById(imageViewIdResource);
 
-        MovieIcon icon = movies.get(position);
-        if (icon != null && icon.getImage() != null) {
-            imageView.setImageDrawable(icon.getImage());
-        } else {
-            imageView.setImageResource(R.drawable.popular_movies_icon);
-        }
+        MovieData icon = movies.get(position);
+
+        String url = "https://image.tmdb.org/t/p/w300"+icon.getImagePath();
+
+        Picasso.with(mContext)
+                .load(url)
+                .into(imageView);
         return imageView;
     }
 
-    public List<MovieIcon> getList() {
+    public List<MovieData> getList() {
         return movies;
     }
 }

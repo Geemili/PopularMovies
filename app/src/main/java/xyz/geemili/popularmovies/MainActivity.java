@@ -1,49 +1,48 @@
 package xyz.geemili.popularmovies;
 
-import android.graphics.Movie;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Pair;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbMovies;
-import info.movito.themoviedbapi.model.Artwork;
 import info.movito.themoviedbapi.model.MovieDb;
-import info.movito.themoviedbapi.model.MovieImages;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MovieIconAdapter mMoviesAdapter;
+    private MovieDataAdapter mMoviesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMoviesAdapter = new MovieIconAdapter(
+        mMoviesAdapter = new MovieDataAdapter(
                 this,
                 R.layout.grid_item_movie,
                 R.id.grid_item_movie_imageView,
-                new ArrayList<MovieIcon>()
+                new ArrayList<MovieData>()
         );
 
         final GridView gridView = (GridView) findViewById(R.id.gridView_movies);
         gridView.setAdapter(mMoviesAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                intent.putExtra("MovieData", (Parcelable) mMoviesAdapter.getItem(position));
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -69,57 +68,22 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<MovieDb> movieDbs) {
             if (movieDbs != null) {
-                List<MovieIcon> list = mMoviesAdapter.getList();
+                List<MovieData> list = mMoviesAdapter.getList();
                 for (int i=0; i<movieDbs.size(); i++) {
-                    MovieIcon movieIcon = new MovieIcon(movieDbs.get(i).getId());
-                    list.add(i, movieIcon);
-                    new FetchMovieImageTask().execute(movieIcon);
+                    MovieDb db = movieDbs.get(i);
+
+                    MovieData movieData = new MovieData(db.getId());
+                    movieData.setImagePath(db.getPosterPath());
+                    movieData.setOriginalTitle(db.getOriginalTitle());
+                    movieData.setVoteAverage(db.getVoteAverage());
+                    movieData.setReleaseDate(db.getReleaseDate());
+                    movieData.setPopularity(db.getPopularity());
+                    movieData.setPlotSynopsis(db.getOverview());
+
+                    list.add(i, movieData);
                 }
                 mMoviesAdapter.notifyDataSetChanged();
             }
-        }
-    }
-
-    private class FetchMovieImageTask extends AsyncTask<MovieIcon, Void, Pair<MovieIcon, Drawable>> {
-
-        private final String LOG_TAG = FetchMovieImageTask.class.getSimpleName();
-
-        @Override
-        protected Pair<MovieIcon, Drawable> doInBackground(MovieIcon... params) {
-            int movieId = params[0].getMovieId();
-            TmdbApi api = new TmdbApi(BuildConfig.TMDB_KEY);
-            TmdbMovies movies = api.getMovies();
-            MovieImages images = movies.getImages(movieId, "en");
-            Artwork art = images.getPosters().get(0);
-
-            InputStream in = null;
-            Drawable bmap = null;
-
-            try {
-                URL url = new URL(api.getConfiguration().getSecureBaseUrl()+"w300"+art.getFilePath());
-                in = url.openStream();
-
-                bmap = BitmapDrawable.createFromStream(in, url.toString());
-            } catch (MalformedURLException e) {
-                Log.e(LOG_TAG, "Error forming image download url", e);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error downloading image", e);
-            } finally {
-                if(in!=null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        Log.e(LOG_TAG, "Couldn't close inputstream", e);
-                    }
-                }
-            }
-            return new Pair<>(params[0], bmap);
-        }
-
-        @Override
-        protected void onPostExecute(Pair<MovieIcon, Drawable> pair) {
-            pair.first.setImage(pair.second);
-            mMoviesAdapter.notifyDataSetChanged();
         }
     }
 }
