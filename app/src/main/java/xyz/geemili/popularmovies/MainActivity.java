@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import info.movito.themoviedbapi.TmdbApi;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<MovieDb> movieDbs) {
             if (movieDbs != null) {
                 List<MovieData> list = mMoviesAdapter.getList();
+                list.clear();
                 for (int i=0; i<movieDbs.size(); i++) {
                     MovieDb db = movieDbs.get(i);
 
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
                     list.add(i, movieData);
                 }
+                Collections.sort(list, MovieData.CompareByVoteAverage);
                 mMoviesAdapter.notifyDataSetChanged();
             }
         }

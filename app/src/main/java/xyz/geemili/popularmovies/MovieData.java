@@ -3,6 +3,8 @@ package xyz.geemili.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Comparator;
+
 /**
  * Created by geemili on 2016-08-16.
  */
@@ -106,4 +108,29 @@ public class MovieData implements Parcelable {
         releaseDate = in.readString();
         popularity = in.readFloat();
     }
+
+    public static Comparator<MovieData> CompareByVoteAverage = new Comparator<MovieData>() {
+        @Override
+        public int compare(MovieData lhs, MovieData rhs) {
+            if (lhs.getVoteAverage() > rhs.getVoteAverage()) {
+                return 1;
+            } else if (lhs.getVoteAverage() < rhs.getVoteAverage()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    };
+    public static Comparator<MovieData> CompareByPopularity = new Comparator<MovieData>() {
+        @Override
+        public int compare(MovieData lhs, MovieData rhs) {
+            if (lhs.getPopularity() > rhs.getPopularity()) {
+                return 1;
+            } else if (lhs.getPopularity() < rhs.getPopularity()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    };
 }
