@@ -1,8 +1,10 @@
 package xyz.geemili.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -107,7 +109,24 @@ public class MainActivity extends AppCompatActivity {
 
                     list.add(i, movieData);
                 }
-                Comparator reverseOrder = Collections.reverseOrder(MovieData.CompareByVoteAverage);
+
+                SharedPreferences sharedPreferences = PreferenceManager
+                        .getDefaultSharedPreferences(getApplicationContext());
+                String order = sharedPreferences.getString(
+                        getString(R.string.pref_order_key),
+                        getString(R.string.pref_order_default)
+                );
+
+                Comparator reverseOrder = Collections.reverseOrder(MovieData.CompareByPopularity);
+                switch (order) {
+                    case "popularity":
+                        reverseOrder = Collections.reverseOrder(MovieData.CompareByPopularity);
+                        break;
+                    case "vote_average":
+                        reverseOrder = Collections.reverseOrder(MovieData.CompareByVoteAverage);
+                        break;
+                }
+
                 Collections.sort(list, reverseOrder);
                 mMoviesAdapter.notifyDataSetChanged();
             }
