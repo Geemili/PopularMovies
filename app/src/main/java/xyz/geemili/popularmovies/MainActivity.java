@@ -1,8 +1,10 @@
 package xyz.geemili.popularmovies;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,26 +30,34 @@ import info.movito.themoviedbapi.model.core.MovieResultsPage;
 public class MainActivity extends AppCompatActivity {
 
     private MovieDataAdapter mMoviesAdapter;
+    private GridView mMovieGrid;
+
+    // Saves where the user is looking when the activity is reconfigured (i.e. screen is rotated)
+    private int gridViewIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMoviesAdapter = new MovieDataAdapter(
-                this,
-                R.layout.grid_item_movie,
-                R.id.grid_item_movie_imageView,
-                new ArrayList<MovieData>()
-        );
+        // Create a new MoveDataAdapter in case we don't have one
+        if (mMoviesAdapter == null) {
+            mMoviesAdapter = new MovieDataAdapter(
+                    this,
+                    R.layout.grid_item_movie,
+                    R.id.grid_item_movie_imageView,
+                    null
+            );
+        }
 
-        final GridView gridView = (GridView) findViewById(R.id.gridView_movies);
-        gridView.setAdapter(mMoviesAdapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mMovieGrid = (GridView) findViewById(R.id.gridView_movies);
+        assert mMovieGrid != null;
+        mMovieGrid.setAdapter(mMoviesAdapter);
+        mMovieGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-                intent.putExtra("MovieData", (Parcelable) mMoviesAdapter.getItem(position));
+                intent.putExtra(getString(R.string.movie_data_intentExtra), (Parcelable) mMoviesAdapter.getItem(position));
                 startActivity(intent);
             }
         });
@@ -77,6 +87,19 @@ public class MainActivity extends AppCompatActivity {
         updateMovies();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save where the user is at in the list
+        outState.putInt("gridViewIndex", mMovieGrid.getFirstVisiblePosition());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstaceState) {
+        super.onRestoreInstanceState(savedInstaceState);
+        gridViewIndex = savedInstaceState.getInt("gridViewIndex");
+    }
+
     private void updateMovies() {
         FetchMoviesTask task = new FetchMoviesTask();
         task.execute();
@@ -95,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<MovieDb> movieDbs) {
             if (movieDbs != null) {
                 List<MovieData> list = mMoviesAdapter.getList();
+                if (list==null) list = new ArrayList<>();
                 list.clear();
                 for (int i=0; i<movieDbs.size(); i++) {
                     MovieDb db = movieDbs.get(i);
@@ -128,8 +152,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Collections.sort(list, reverseOrder);
-                mMoviesAdapter.notifyDataSetChanged();
+                mMoviesAdapter.setList(list);
             }
+            // Scroll the the position that the user was at before the activity was reconfigured.
+            mMovieGrid.setSelection(gridViewIndex);
         }
     }
 }

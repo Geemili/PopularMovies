@@ -37,11 +37,13 @@ public class MovieDataAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        if (movies==null) return 0;
         return movies.size();
     }
 
     @Override
     public Object getItem(int position) {
+        if (movies==null) return null;
         return movies.get(position);
     }
 
@@ -52,6 +54,7 @@ public class MovieDataAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        if (movies==null) return convertView;
         View view;
         ImageView imageView;
         if (convertView == null) {
@@ -74,5 +77,10 @@ public class MovieDataAdapter extends BaseAdapter {
 
     public List<MovieData> getList() {
         return movies;
+    }
+
+    public void setList(List<MovieData> movies) {
+        this.movies = movies;
+        this.notifyDataSetChanged();
     }
 }

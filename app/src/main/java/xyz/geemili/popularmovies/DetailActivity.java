@@ -33,8 +33,8 @@ public class DetailActivity extends AppCompatActivity {
         mReleaseDateTextView = (TextView) findViewById(R.id.release_date_textView);
 
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("MovieData")) {
-            MovieData data = (MovieData) intent.getParcelableExtra("MovieData");
+        if (intent != null && intent.hasExtra(getString(R.string.movie_data_intentExtra))) {
+            MovieData data = (MovieData) intent.getParcelableExtra(getString(R.string.movie_data_intentExtra));
             mMovieTitleTextView.setText(data.getOriginalTitle());
             mOverviewTextView.setText(data.getPlotSynopsis());
             mUserRatingTextView.setText(String.format(Locale.US, "%.1f", data.getVoteAverage()));
