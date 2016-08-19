@@ -13,7 +13,7 @@ android {
     }
     buildTypes {
         applicationVariants.all { variant ->
-            variant.buildConfigField "String", "TMDB_KEY", "\""+getApiKey()+"\""
+            variant.buildConfigField "String", "TMDB_KEY", "\"" + getApiKey() + "\""
         }
         release {
             minifyEnabled false
@@ -31,10 +31,12 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
+    compile group: 'info.movito', name: 'themoviedbapi', version: '1.4'
     compile 'com.android.support:appcompat-v7:23.4.0'
-    compile group: 'info.movito', name: 'themoviedbapi', version:'1.4'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.android.support:support-v4:23.4.0'
 }
+
 
 def getApiKey() {
     def Properties props = new Properties()
