@@ -102,15 +102,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateMovies() {
         FetchMoviesTask task = new FetchMoviesTask();
-        task.execute();
+
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        String order = sharedPreferences.getString(
+                getString(R.string.pref_order_key),
+                getString(R.string.pref_order_default)
+        );
+
+        task.execute(order);
     }
 
-    private class FetchMoviesTask extends AsyncTask<Void, Void, List<MovieDb>> {
+    private class FetchMoviesTask extends AsyncTask<String, Void, List<MovieDb>> {
 
         @Override
-        protected List<MovieDb> doInBackground(Void... params) {
+        protected List<MovieDb> doInBackground(String... params) {
             TmdbMovies movies = new TmdbApi(BuildConfig.TMDB_KEY).getMovies();
-            MovieResultsPage page = movies.getPopularMovies("en", 0);
+            MovieResultsPage page = null;
+            switch (params[0]) {
+                case "popularity":
+                    page = movies.getPopularMovies(getString(R.string.tmdb_language), 0);
+                    break;
+                case "vote_average":
+                    page = movies.getTopRatedMovies(getString(R.string.tmdb_language), 0);
+                    break;
+            }
             return page.getResults();
         }
 

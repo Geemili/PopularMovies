@@ -39,7 +39,7 @@ public class DetailActivity extends AppCompatActivity {
             mOverviewTextView.setText(data.getPlotSynopsis());
             mUserRatingTextView.setText(String.format(Locale.US, "%.1f", data.getVoteAverage()));
             mReleaseDateTextView.setText(String.format(Locale.US, "Released %s", data.getReleaseDate()));
-            String imageUrl = "https://image.tmdb.org/t/p/w300"+data.getImagePath();
+            String imageUrl = getString(R.string.tmdb_image_url)+getString(R.string.tmdb_image_size)+data.getImagePath();
             Picasso.with(this)
                     .load(imageUrl)
                     .into(mMoviePosterImageView);
