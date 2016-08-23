@@ -6,7 +6,7 @@
         android:id="@+id/gridView_movies"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="2"
+        android:numColumns="auto_fit"
         >
     </GridView>
 </merge>
