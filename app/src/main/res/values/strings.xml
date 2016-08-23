@@ -11,4 +11,5 @@
     <string name="tmdb_image_url">https://image.tmdb.org/t/p/</string>
     <string name="tmdb_image_size">w300</string>
     <string name="tmdb_language">en</string>
+    <string name="first_index_gridView">gridViewIndex</string>
 </resources>
