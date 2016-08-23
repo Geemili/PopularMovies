@@ -10,31 +10,29 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by geemili on 2016-08-17.
  */
 public class DetailActivity extends AppCompatActivity {
 
-    private ImageView mMoviePosterImageView;
-    private TextView mMovieTitleTextView;
-    private TextView mOverviewTextView;
-    private TextView mUserRatingTextView;
-    private TextView mReleaseDateTextView;
+    @BindView(R.id.movie_poster_imageView) ImageView mMoviePosterImageView;
+    @BindView(R.id.movie_title_textView) TextView mMovieTitleTextView;
+    @BindView(R.id.overview_textView) TextView mOverviewTextView;
+    @BindView(R.id.user_rating_textView) TextView mUserRatingTextView;
+    @BindView(R.id.release_date_textView) TextView mReleaseDateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
         setContentView(R.layout.activity_detail);
-
-        mMoviePosterImageView = (ImageView) findViewById(R.id.movie_poster_imageView);
-        mMovieTitleTextView = (TextView) findViewById(R.id.movie_title_textView);
-        mOverviewTextView = (TextView) findViewById(R.id.overview_textView);
-        mUserRatingTextView = (TextView) findViewById(R.id.user_rating_textView);
-        mReleaseDateTextView = (TextView) findViewById(R.id.release_date_textView);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(getString(R.string.movie_data_intentExtra))) {
-            MovieData data = (MovieData) intent.getParcelableExtra(getString(R.string.movie_data_intentExtra));
+            MovieData data = intent.getParcelableExtra(getString(R.string.movie_data_intentExtra));
             mMovieTitleTextView.setText(data.getOriginalTitle());
             mOverviewTextView.setText(data.getPlotSynopsis());
             mUserRatingTextView.setText(String.format(Locale.US, "%.1f", data.getVoteAverage()));
